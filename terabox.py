@@ -7,7 +7,6 @@ import logging
 import math
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
-from pyrogram.enums import ChatMemberStatus
 from pyrogram.errors import FloodWait
 import time
 import urllib.parse
@@ -67,13 +66,6 @@ if len(DUMP_CHAT_ID) == 0:
 else:
     DUMP_CHAT_ID = int(DUMP_CHAT_ID)
 
-FSUB_ID = os.environ.get('FSUB_ID', '')
-if len(FSUB_ID) == 0:
-    logging.error("FSUB_ID variable is missing! Exiting now")
-    exit(1)
-else:
-    FSUB_ID = int(FSUB_ID)
-
 USER_SESSION_STRING = os.environ.get('USER_SESSION_STRING', '')
 if len(USER_SESSION_STRING) == 0:
     logging.info("USER_SESSION_STRING variable is missing! Bot will split Files in 2Gb...")
@@ -95,17 +87,6 @@ VALID_DOMAINS = [
 ]
 last_update_time = 0
 
-async def is_user_member(client, user_id):
-    try:
-        member = await client.get_chat_member(FSUB_ID, user_id)
-        if member.status in [ChatMemberStatus.MEMBER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
-            return True
-        else:
-            return False
-    except Exception as e:
-        logging.error(f"Error checking membership status for user {user_id}: {e}")
-        return False
-    
 def is_valid_url(url):
     parsed_url = urlparse(url)
     return any(parsed_url.netloc.endswith(domain) for domain in VALID_DOMAINS)
@@ -122,11 +103,10 @@ def format_size(size):
 
 @app.on_message(filters.command("start"))
 async def start_command(client: Client, message: Message):
-    join_button = InlineKeyboardButton("ᴊᴏɪɴ ❤️🚀", url="https://t.me")
-    developer_button = InlineKeyboardButton("ᴅᴇᴠᴇʟᴏᴘᴇʀ ⚡️", url="https://t.me")
+    developer_button = InlineKeyboardButton("ᴅᴇᴠᴇʟᴏᴘᴇʀ ⚡️", url="https://github.com/AdrashxX")
     repo69 = InlineKeyboardButton("ʀᴇᴘᴏ 🌐", url="https://github.com/AdrashxX/Terabox-Downloader-Bot")
     user_mention = message.from_user.mention
-    reply_markup = InlineKeyboardMarkup([[join_button, developer_button], [repo69]])
+    reply_markup = InlineKeyboardMarkup([[developer_button], [repo69]])
     final_msg = f"ᴡᴇʟᴄᴏᴍᴇ, {user_mention}.\n\n🌟 ɪ ᴀᴍ ᴀ ᴛᴇʀᴀʙᴏx ᴅᴏᴡɴʟᴏᴀᴅᴇʀ ʙᴏᴛ. sᴇɴᴅ ᴍᴇ ᴀɴʏ ᴛᴇʀᴀʙᴏx ʟɪɴᴋ ɪ ᴡɪʟʟ ᴅᴏᴡɴʟᴏᴀᴅ ᴡɪᴛʜɪɴ ғᴇᴡ sᴇᴄᴏɴᴅs ᴀɴᴅ sᴇɴᴅ ɪᴛ ᴛᴏ ʏᴏᴜ ✨."
     video_file_id = "/app/Jet-Mirror.mp4"
     if os.path.exists(video_file_id):
@@ -147,19 +127,12 @@ async def update_status_message(status_message, text):
 
 @app.on_message(filters.text)
 async def handle_message(client: Client, message: Message):
-    if message.text.startswith('/'):
+    if message.text.startswith('/') and not message.text.startswith('/start'):
         return
     if not message.from_user:
         return
 
     user_id = message.from_user.id
-    is_member = await is_user_member(client, user_id)
-
-    if not is_member:
-        join_button = InlineKeyboardButton("ᴊᴏɪɴ ❤️🚀", url="https://t.me")
-        reply_markup = InlineKeyboardMarkup([[join_button]])
-        await message.reply_text("ʏᴏᴜ ᴍᴜsᴛ ᴊᴏɪɴ ᴍʏ ᴄʜᴀɴɴᴇʟ ᴛᴏ ᴜsᴇ ᴍᴇ.", reply_markup=reply_markup)
-        return
     
     url = None
     for word in message.text.split():
@@ -208,9 +181,7 @@ async def handle_message(client: Client, message: Message):
     file_path = download.files[0].path
     caption = (
         f"✨ {download.name}\n"
-        f"👤 ʟᴇᴇᴄʜᴇᴅ ʙʏ : <a href='tg://user?id={user_id}'>{message.from_user.first_name}</a>\n"
-        f"📥 ᴜsᴇʀ ʟɪɴᴋ: tg://user?id={user_id}\n\n"
-        "[ᴘᴏᴡᴇʀᴇᴅ ʙʏ HM ❤️🚀](https://t.me)"
+        f"👤 ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ ʙʏ : <a href='tg://user?id={user_id}'>{message.from_user.first_name}</a>"
     )
 
     last_update_time = time.time()
