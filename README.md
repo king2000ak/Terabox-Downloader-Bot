@@ -29,7 +29,7 @@ This is a Telegram Bot written in Python for Downloading Videos From Terabox.
 - Clone this repo:
 
 ```
-git clone https://github.com/Hrishi2861/Terabox-Downloader-Bot/ && cd Terabox-Downloader-Bot
+git clone https://github.com/AdrashxX/Terabox-Downloader-Bot/ && cd Terabox-Downloader-Bot
 ```
 
 - For Debian based distros
